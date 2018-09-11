@@ -1,11 +1,17 @@
-# -*- coding: utf-8 -*-
+from pymongo import MongoClient 
 
-# Define your item pipelines here
-#
-# Don't forget to add your pipeline to the ITEM_PIPELINES setting
-# See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
+class MongoPipeline(object):
+    """
+    Item을 MongoDB에 저장하는 Pipeline
+    """
+    def open_spider(self, spider):
+        self.client = MongoClient('localhost', 27017)
+        self.db = self.client['scrap_clien']
+        self.collection = self.db['article']
+    
+    def close_spider(self, spider):
+        self.client.close()
 
-
-class ClienCrawlPipeline(object):
     def process_item(self, item, spider):
-        return item
+        self.collection.insert_one(dict(item))    
+
